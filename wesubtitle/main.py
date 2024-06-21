@@ -15,16 +15,22 @@ def box2int(box):
     return box
 
 
+
 def detect_subtitle_area(ocr_results, h, w):
     '''
     Args:
         w(int): width of the input video
         h(int): height of the input video
     '''
+    # print(ocr_results) # for debug add by L1_Sta2
     ocr_results = ocr_results[0]  # 0, the first image result
+    
     # Merge horizon text areas
     idx = 0
     candidates = []
+    if not ocr_results:
+        ocr_results = []
+        
     while idx < len(ocr_results):
         boxes, text = ocr_results[idx]
         # We assume the subtitle is at bottom of the video
@@ -49,10 +55,9 @@ def detect_subtitle_area(ocr_results, h, w):
     if len(candidates) > 0:
         sub_boxes, subtitle = candidates[-1]
         # offset is less than 10%
-        if (sub_boxes[0][0] + sub_boxes[1][0]) / w > 0.90:
+        if (sub_boxes[0][0] + sub_boxes[1][0]) / w > 0.70: # 这里降低了要求
             return True, box2int(sub_boxes), subtitle
     return False, None, None
-
 
 def get_args():
     parser = argparse.ArgumentParser(description='we subtitle')
